@@ -53,6 +53,28 @@
             <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
                 <div class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
                     <h1 class="mb-1 font-medium">Let's get started</h1>
+                    <div class="mb-4">
+                        <div class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">
+                            <span class="font-medium">aktuelles projekt:</span>
+                            <span>
+                                {{ isset($currentProjectName) ? $currentProjectName : 'n/a' }}
+                            </span>
+                        </div>
+                        <form method="POST" action="{{ route('project.select') }}">
+                            @csrf
+                            <label for="project_id" class="block mb-1">Projekt wählen</label>
+                            <select id="project_id" name="project_id" class="border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm px-5 py-1.5 w-full" onchange="this.form.submit()">
+                                <option value="">-- auswählen --</option>
+                                @if(isset($projects))
+                                    @foreach($projects as $p)
+                                        <option value="{{ $p->Id }}" {{ (isset($currentProjectId) && (string)$currentProjectId === (string)$p->Id) ? 'selected' : '' }}>
+                                            {{ $p->Projektname }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </form>
+                    </div>
                     <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">Laravel has an incredibly rich ecosystem. <br>We suggest starting with the following.</p>
                     <ul class="flex flex-col mb-4 lg:mb-6">
                         <li class="flex items-center gap-4 py-2 relative before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A] before:top-1/2 before:bottom-0 before:left-[0.4rem] before:absolute">
