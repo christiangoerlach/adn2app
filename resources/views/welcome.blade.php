@@ -75,6 +75,36 @@
                             </select>
                         </form>
                     </div>
+                    @if(isset($currentProjectId) && $currentProjectId !== '')
+                        <div class="mb-4">
+                            <h2 class="font-medium mb-2">Blob-Objekte im Container @if(!empty($currentContainerName))<code>{{ $currentContainerName }}</code>@endif</h2>
+                            @if(!empty($images))
+                                <ul class="mb-4 list-disc pl-6">
+                                    @foreach($images as $img)
+                                        <li>
+                                            <span class="text-[#706f6c] dark:text-[#A1A09A]">{{ $img['fileName'] }}</span>
+                                            @if($img['url'])
+                                                <a href="{{ $img['url'] }}" target="_blank" class="underline underline-offset-4 text-[#f53003] dark:text-[#FF4433] ml-2">öffnen</a>
+                                                <div class="mt-1 text-[12px] text-[#706f6c] dark:text-[#A1A09A] break-all">link zu "datenbankeintrag": {{ $img['url'] }}</div>
+                                            @endif
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                <div class="grid grid-cols-1 gap-3">
+                                    @foreach($images as $img)
+                                        @if($img['url'])
+                                            <div class="border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm p-2">
+                                                <div class="text-sm mb-2">{{ $img['fileName'] }}</div>
+                                                <img src="{{ $img['url'] }}" alt="{{ $img['fileName'] }}" class="w-full"/>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="text-[#706f6c] dark:text-[#A1A09A]">Keine Bilder zum aktuellen Projekt gefunden.</div>
+                            @endif
+                        </div>
+                    @endif
                     <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">Laravel has an incredibly rich ecosystem. <br>We suggest starting with the following.</p>
                     <ul class="flex flex-col mb-4 lg:mb-6">
                         <li class="flex items-center gap-4 py-2 relative before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A] before:top-1/2 before:bottom-0 before:left-[0.4rem] before:absolute">

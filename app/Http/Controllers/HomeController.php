@@ -28,10 +28,52 @@ class HomeController extends Controller
             }
         }
 
+        // Bilder und Azure-URLs für das aktuell gewählte Projekt laden
+        $currentContainerName = null;
+        $images = [];
+        $blobBaseUrl = null;
+        if ($currentProjectId !== '') {
+            $currentContainerName = DB::table('projects')
+                ->where('Id', $currentProjectId)
+                ->value('BilderContainer');
+
+            $imageRows = DB::table('bilder')
+                ->select(['Id', 'FileName', 'CreatedAt'])
+                ->where('ProjectsId', $currentProjectId)
+                ->orderBy('CreatedAt', 'desc')
+                ->get();
+
+            $baseUrl = env('BLOB_BASE_URL');
+            if (!$baseUrl || trim((string) $baseUrl) === '') {
+                $account = env('AZURE_STORAGE_ACCOUNT');
+                $suffix = env('AZURE_STORAGE_ENDPOINT_SUFFIX', 'core.windows.net');
+                if ($account) {
+                    $baseUrl = 'https://' . $account . '.blob.' . $suffix;
+                }
+            }
+            $blobBaseUrl = $baseUrl;
+
+            foreach ($imageRows as $row) {
+                $url = null;
+                if ($baseUrl && $currentContainerName && $row->FileName) {
+                    $url = rtrim((string) $baseUrl, '/') . '/' . trim((string) $currentContainerName, '/') . '/' . rawurlencode((string) $row->FileName);
+                }
+                $images[] = [
+                    'id' => $row->Id,
+                    'fileName' => (string) $row->FileName,
+                    'url' => $url,
+                    'fullUrl' => $url,
+                ];
+            }
+        }
+
         return view('welcome', [
             'projects' => $projects,
             'currentProjectId' => $currentProjectId,
             'currentProjectName' => $currentProjectName,
+            'currentContainerName' => $currentContainerName,
+            'images' => $images,
+            'blobBaseUrl' => $blobBaseUrl,
         ]);
     }
 

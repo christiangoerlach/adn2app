@@ -60,6 +60,16 @@ return [
             'report' => false,
         ],
 
+        'azure' => [
+            'driver' => 'azureblob',
+            'connection_string' => env('AZURE_STORAGE_CONNECTION_STRING'),
+            'account' => env('AZURE_STORAGE_ACCOUNT'),
+            'key' => env('AZURE_STORAGE_KEY'),
+            'endpoint_suffix' => env('AZURE_STORAGE_ENDPOINT_SUFFIX', 'core.windows.net'),
+            // Container wird dynamisch bestimmt anhand der Projektauswahl (projects.BilderContainer)
+            'container' => env('AZURE_STORAGE_CONTAINER_NAME', ''),
+        ],
+
     ],
 
     /*

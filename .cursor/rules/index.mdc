@@ -1,0 +1,76 @@
+---
+alwaysApply: true
+---
+# Projektname: ADN2APP
+
+## Überblick
+- Zweck: Webanwendung zur Bewertung von Straßenbildern
+- Stack: Laravel 12.24.0, PHP 8.3.24, Microsoft SQL Azure (RTM) - 12.0.2000.8  	
+
+
+## Datenbank
+rules:
+  - name: database_access
+    description: "Datenbankzugang wird ausschließlich über die .env-Datei gesteuert."
+    env_variables:
+      - DB_CONNECTION
+      - DB_HOST
+      - DB_PORT
+      - DB_DATABASE
+      - DB_USERNAME
+      - DB_PASSWORD
+      - DB_ENCRYPT
+     note: "Keine festen Credentials im Code. Alle Werte werden zur Laufzeit aus der .env geladen."
+
+
+## Datenbankschema
+- **projects**: Id (PK), Projektname, BilderContainer 
+- **bilder**: Id (PK), ProjectsId (FK → projects.Id ), FileName, CreatedAt
+
+BilderContainer ist der Name des Blob-Containers im AzureStorage
+
+
+## Beziehungen
+- bilder belongsTo projects via ProjectsId
+- projects hasMany bilder via ProjectsID
+
+
+## Storage
+rules: Storage
+    - name: "Es wird Azure Storage verwendet.""
+    Der AZURE_STORAGE_CONTAINER_NAME ist in der Datenbank projects.BilderContainer
+    env_variables:
+        AZURE_STORAGE_CONNECTION_STRING
+        ## AZURE_STORAGE_CONTAINER_NAME
+        BLOB_BASE_URL
+        AZURE_STORAGE_ACCOUNT
+        AZURE_STORAGE_KEY
+
+
+
+# Rules – Projektauswahl
+
+rules:
+  - name: aktuelles_projekt
+    description: "Das aktuell ausgewählte Projekt wird in Session/Cache gespeichert."
+    session_key: current_project_id
+    config_key: app.current_project_id
+    default_value: "n/a"
+
+  - name: routen
+    description: "Definition der relevanten Routen für Projektauswahl."
+    routes:
+      - name: home
+        method: GET
+        path: /
+        purpose: "Startseite anzeigen"
+      - name: project.select
+        method: POST
+        path: /select-project
+        purpose: "Projekt auswählen und Session/Config aktualisieren"
+
+  - name: dropdown_anzeige
+    description: "Dropdown für Projektauswahl auf Startseite."
+    behavior:
+      default: "n/a"
+      onchange: "Submit Form, Session/Config wird sofort aktualisiert"
